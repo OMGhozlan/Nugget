@@ -19,7 +19,6 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-
 public class WeatherFragment extends Fragment {
     Typeface weatherFont;
 
@@ -68,26 +67,27 @@ public class WeatherFragment extends Fragment {
 
     private void displayWeather(JSONObject json) {
         try {
-            cityField.setText(json.getString("name").toUpperCase(Locale.US) +
+            cityField.setText(json.getJSONObject("city").getString("name").toUpperCase(Locale.US) +
                     ", " +
-                    json.getJSONObject("sys").getString("country"));
+                    json.getJSONObject("city").getString("country"));
 
-            JSONObject details = json.getJSONArray("weather").getJSONObject(0);
-            JSONObject main = json.getJSONObject("main");
+            JSONObject details = json.getJSONArray("list").getJSONObject(0).getJSONArray("weather").getJSONObject(0);
+            JSONObject main = json.getJSONArray("list").getJSONObject(0);
             detailsField.setText(
                     details.getString("description").toUpperCase(Locale.US) +
                             "\n" + "Humidity: " + main.getString("humidity") + "%" +
                             "\n" + "Pressure: " + main.getString("pressure") + " hPa");
             currentTemperatureField.setText(
-                    String.format("%.2f", main.getDouble("temp")) + " ℃");
+                    String.format("%.2f\n" + main.getJSONObject("temp").getDouble("max") + " ℃\n" +
+                            "%.2f\n" + main.getJSONObject("temp").getDouble("min"))  + " ℃");
 
             DateFormat df = DateFormat.getDateTimeInstance();
-            String updatedOn = df.format(new Date(json.getLong("dt") * 1000));
+            String updatedOn = df.format(new Date(json.getJSONArray("list").getJSONObject(0).getInt("dt") * 1000));
             updatedField.setText("Last update: " + updatedOn);
 
             drawIcon(details.getInt("id"),
-                    json.getJSONObject("sys").getLong("sunrise") * 1000,
-                    json.getJSONObject("sys").getLong("sunset") * 1000);
+                    json.getJSONArray("list").getJSONObject(0).getInt("dt") * 1000,
+                    (json.getJSONArray("list").getJSONObject(0).getInt("dt") + 21600) * 1000);
 
         } catch (Exception e) {
             Log.e("Nugget>Weather", "One or more fields missing in JSON data");

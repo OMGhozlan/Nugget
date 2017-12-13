@@ -26,7 +26,7 @@ public class ItemAdapter extends ArrayAdapter<Item> {
             vh = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
             view = inflater.inflate(R.layout.item, parent, false);
-            vh.name = (TextView) view.findViewById(R.id.item_name);
+            vh.name = (TextView) view.findViewById(R.id.date);
             vh.value = (TextView) view.findViewById(R.id.item_value);
             view.setTag(vh);
         } else {
